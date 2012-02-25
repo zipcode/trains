@@ -16,7 +16,7 @@ object RouteingPointIdentifier {
   }
 
   def fromPDF(s: String) = {
-    parse(PDFReader.getPages(new File(s, targetfile)).map { _.split("\n").drop(4) }.flatten.toList)
+    parse(PDFReader.getPages(new File(s, targetfile)).flatMap { _.split("\n").drop(4) })
   }
 
   /**
