@@ -48,19 +48,13 @@ object RouteingPointIdentifier {
    * Whatever is left at the start is the station
    */
   private def parseLine(points: Set[String], line: String): (String, List[String]) = {
-    val tokens: List[String] = unfold(line) { ss =>
+    val tokens: List[String] = Util.unfold(line) { ss =>
       points find (ss.toLowerCase endsWith _.toLowerCase) match {
         case Some(s) => Some(s, ss.substring(0, ss.size - s.size - 1))
         case None => if (ss.size == 0) None else Some(ss, "")
       }
     }
     (tokens.reverse.head, tokens.reverse.tail)
-  }
-
-  /** Helper function */
-  private def unfold[S,T](init: T)(f: T => Option[(S, T)]): List[S] = f(init) match {
-    case Some((item, remain)) => item :: unfold(remain)(f)
-    case None => Nil
   }
 }
 
