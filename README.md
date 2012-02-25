@@ -8,4 +8,4 @@ from the PDF in a parseable format.
 
 Usage:
 
-    sbt "run path/to/routeing_point_identifier.pdf"
+    sbt "run path/to/atoc_pdfs

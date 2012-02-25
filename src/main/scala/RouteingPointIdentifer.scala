@@ -1,16 +1,19 @@
 package com.github.voqo.train
 
-import java.io.OutputStreamWriter
+import java.io.File
 import java.io.ByteArrayOutputStream
+import java.io.OutputStreamWriter
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.util.PDFTextStripper
 
-object RouteingPoints {
+object RouteingPointIdentifier {
+  val targetfile = "routeing_point_identifier.pdf"
+
   def main(args: Array[String]) {
     if (args.size != 1) {
-      Log.error("Wrong number of arguments")
+      Log.error("Wrong number of arguments. Please supply the source directory.")
       System.exit(1)
     }
 
@@ -19,15 +22,15 @@ object RouteingPoints {
   }
 
   def fromPDF(s: String) = {
-    parse(extract(s))
+    parse(extract(new File(s, targetfile)))
   }
 
   /**
    * Extract lines from the routeing point PDF
    */
-  private def extract(s: String): Seq[String] = {
+  private def extract(f: File): Seq[String] = {
     val sep = "---- PAGE ----\n"
-    val doc = PDDocument.load(s)
+    val doc = PDDocument.load(f)
     val stream = new ByteArrayOutputStream
     val output = new OutputStreamWriter(stream)
     val stripper = new PDFTextStripper("UTF-8") {
