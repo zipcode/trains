@@ -15,15 +15,18 @@ object RouteingPoints {
       System.exit(1)
     }
 
-    val rps = parse(extract(args(0)))
-    rps.map { println(_) }
+    val rps = fromPDF(args(0))
+    rps.map { case (s, rs) => println("%s: %s" format (s, rs mkString ", ")) }
+  }
+
+  def fromPDF(s: String) = {
+    parse(extract(s))
   }
 
   /**
-   * Takes the path of routeing_point_identifier.pdf and returns
-   * each routeing line within that document
+   * Extract lines from the routeing point PDF
    */
-  def extract(s: String): Seq[String] = {
+  private def extract(s: String): Seq[String] = {
     val sep = "---- PAGE ----\n"
     val doc = PDDocument.load(s)
     val stream = new ByteArrayOutputStream
@@ -38,16 +41,31 @@ object RouteingPoints {
     stream.toString("UTF-8").split(sep).map { _.split("\n").drop(4) }.flatten.toList
   }
 
-  def parse(lines: Seq[String]): Map[String, List[String]] = {
+  /**
+   * Parse the lines from the PDF.
+   * There are three line formats:
+   * 1. Routeing points, in ALL CAPS
+   * 2. Routeing point group members
+   * 3. Ordinary stations
+   *
+   * 1 and 2 are trivial, but the PDF reader messes up the spacing for
+   * 3 so we have to use the names from 1 and 2 to extract the
+   * individual tokens.
+   */
+  private def parse(lines: Seq[String]) = {
     val points = lines collect { case RouteingOrGroupPoint(s, p) => p } toSet
 
-    (lines collect {
+    lines collect {
       case RouteingOrGroupPoint(s, p) => (s -> List(p))
       case line => parseLine(points, line)
-    }).toMap
+    }
   }
 
-  def parseLine(points: Set[String], line: String): (String, List[String]) = {
+  /**
+   * Use a list of known routeing points to tokenise the string
+   * Whatever is left at the start is the station
+   */
+  private def parseLine(points: Set[String], line: String): (String, List[String]) = {
     val tokens: List[String] = unfold(line.toLowerCase) { ss =>
       points find (ss endsWith _) match {
         case Some(s) => Some(s, ss.substring(0, ss.size - s.size - 1))
@@ -57,12 +75,16 @@ object RouteingPoints {
     (tokens.reverse.head, tokens.reverse.tail)
   }
 
-  def unfold[S,T](init: T)(f: T => Option[(S, T)]): List[S] = f(init) match {
+  /** Helper function */
+  private def unfold[S,T](init: T)(f: T => Option[(S, T)]): List[S] = f(init) match {
     case Some((item, remain)) => item :: unfold(remain)(f)
     case None => Nil
   }
 }
 
+/**
+ * Extractor object for routeing points that can be handled by regexp
+ */
 object RouteingOrGroupPoint {
   def unapply(s: String): Option[(String, String)] = {
     import scala.util.matching.Regex.Match
