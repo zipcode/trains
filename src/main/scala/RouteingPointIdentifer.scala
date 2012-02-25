@@ -11,12 +11,12 @@ object RouteingPointIdentifier {
       System.exit(1)
     }
 
-    val rps = fromPDF(args(0))
+    val rps = fromPDF(new File(args(0), targetfile))
     rps.map { case (s, rs) => println("%s: %s" format (s, rs mkString ", ")) }
   }
 
-  def fromPDF(s: String) = {
-    parse(PDFReader.getPages(new File(s, targetfile)).flatMap { _.split("\n").drop(4) })
+  def fromPDF(f: File) = {
+    parse(PDFReader.getPages(f) flatMap { _.split("\n").drop(4) })
   }
 
   /**
