@@ -1,6 +1,5 @@
 package com.github.voqo.train
 
-import java.io.File
 import java.io.OutputStreamWriter
 import java.io.ByteArrayOutputStream
 
