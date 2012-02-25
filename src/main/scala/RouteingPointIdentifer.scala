@@ -59,7 +59,7 @@ object RouteingPointIdentifier {
 
     /* Stratford U Group seems to have no actual stations, and thus
        breaks my code. This is a horrible hack */
-    points += "stratford u group"
+    points += "Stratford U Group"
 
     lines collect {
       case RouteingOrGroupPoint(s, p) => (s -> List(p))
@@ -72,8 +72,8 @@ object RouteingPointIdentifier {
    * Whatever is left at the start is the station
    */
   private def parseLine(points: Set[String], line: String): (String, List[String]) = {
-    val tokens: List[String] = unfold(line.toLowerCase) { ss =>
-      points find (ss endsWith _) match {
+    val tokens: List[String] = unfold(line) { ss =>
+      points find (ss.toLowerCase endsWith _.toLowerCase) match {
         case Some(s) => Some(s, ss.substring(0, ss.size - s.size - 1))
         case None => if (ss.size == 0) None else Some(ss, "")
       }
@@ -99,7 +99,7 @@ object RouteingOrGroupPoint {
                         ("^([^a-z ]+( [^a-z ]+)*) (.*) Routeing Point Member$", 0, 2))
     (matchers map { case (pattern, k1, k2) =>
       pattern.r.findFirstMatchIn(s).map { m: Match =>
-        val f = { n: Int => m.subgroups(n).toLowerCase }
+        val f = { n: Int => m.subgroups(n) }
         (f(k1), f(k2))
       }
     }) find (_.isDefined) map (_.get)
