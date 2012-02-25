@@ -16,7 +16,7 @@ object RouteingPoints {
     }
 
     val rps = parse(extract(args(0)))
-    rps.rps.map { println(_) }
+    rps.map { println(_) }
   }
 
   /**
@@ -38,41 +38,29 @@ object RouteingPoints {
     stream.toString("UTF-8").split(sep).map { _.split("\n").drop(4) }.flatten.toList
   }
 
-  def parse(lines: Seq[String]): RouteingPoints = {
-    val rps = new RouteingPoints()
-
+  def parse(lines: Seq[String]): Map[String, List[String]] = {
     val points = lines collect { case RouteingOrGroupPoint(s, p) => p } toSet
 
     (lines collect {
-      case RouteingOrGroupPoint(s, p) => List((s, p))
+      case RouteingOrGroupPoint(s, p) => (s -> List(p))
       case line => parseLine(points, line)
-    }).flatten.foreach { t => rps addRP (t._1, t._2) }
-
-    rps
+    }).toMap
   }
 
-  def parseLine(points: Set[String], line: String): List[(String,String)] = {
+  def parseLine(points: Set[String], line: String): (String, List[String]) = {
     val tokens: List[String] = unfold(line.toLowerCase) { ss =>
       points find (ss endsWith _) match {
         case Some(s) => Some(s, ss.substring(0, ss.size - s.size - 1))
         case None => if (ss.size == 0) None else Some(ss, "")
       }
     }
-    tokens.reverse.tail map { tokens.reverse.head -> _ }
+    (tokens.reverse.head, tokens.reverse.tail)
   }
 
   def unfold[S,T](init: T)(f: T => Option[(S, T)]): List[S] = f(init) match {
     case Some((item, remain)) => item :: unfold(remain)(f)
     case None => Nil
   }
-}
-
-class RouteingPoints {
-  import scala.collection.{mutable => m}
-  val rps = new m.HashMap[String, m.Set[String]] with m.MultiMap[String, String]
-
-  def apply = rps.apply _
-  def addRP = rps.addBinding _
 }
 
 object RouteingOrGroupPoint {
