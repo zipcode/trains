@@ -53,7 +53,11 @@ object RouteingPoints {
    * individual tokens.
    */
   private def parse(lines: Seq[String]) = {
-    val points = lines collect { case RouteingOrGroupPoint(s, p) => p } toSet
+    var points: Set[String] = (lines collect { case RouteingOrGroupPoint(s, p) => p } toSet)
+
+    /* Stratford U Group seems to have no actual stations, and thus
+       breaks my code. This is a horrible hack */
+    points += "stratford u group"
 
     lines collect {
       case RouteingOrGroupPoint(s, p) => (s -> List(p))
