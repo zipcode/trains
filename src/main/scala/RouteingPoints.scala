@@ -14,15 +14,14 @@ object RouteingPoints {
   /**
    * Extract Routeing Point to Map mappings
    * This relies upon each Map name being two characters, and the map
-   * names being listed in alphabetical order. Thus we can chomp off
-   * two-character names as long as they're ascending and avoid capturing
-   * the JN on the end of WILLESDEN JN.
+   * names being listed in alphabetical order.
+   * Also: JN is never a token. Don't chomp it.
    */
   private def parse(lines: Seq[String]) = {
     val entries = for (line <- lines) yield {
       val tokens = line split " "
       val ms: List[String] = tokens.foldRight(List[String]()) { (token, acc) =>
-        if (token.size == 2 && (acc.isEmpty || token < acc.head)) {
+        if (token.size == 2 && (acc.isEmpty || token < acc.head) && token != "JN") {
           token :: acc
         } else acc
       }
