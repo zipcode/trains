@@ -5,15 +5,7 @@ import java.io.File
 object RouteingPoints {
   val targetfile = "routeing_points.pdf"
 
-  def main(args: Array[String]) {
-    if (args.size != 1) {
-      Log.error("Wrong number of arguments. Please supply the source directory.")
-      System.exit(1)
-    }
-
-    val rps = fromPDF(new File(args(0), targetfile))
-    rps.map { case (s, rs) => println("%s: %s" format (s, rs mkString ", ")) }
-  }
+  def fromDirectory(s: String) = fromPDF(new File(s, targetfile))
 
   def fromPDF(f: File) = {
     parse(PDFReader.getPages(f) flatMap { _.split("\n").drop(1) })

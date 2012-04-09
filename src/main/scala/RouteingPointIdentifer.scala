@@ -5,18 +5,10 @@ import java.io.File
 object RouteingPointIdentifier {
   val targetfile = "routeing_point_identifier.pdf"
 
-  def main(args: Array[String]) {
-    if (args.size != 1) {
-      Log.error("Wrong number of arguments. Please supply the source directory.")
-      System.exit(1)
-    }
+  def fromDirectory(s: String, p: Set[String]) = fromPDF(new File(s, targetfile), p)
 
-    val rps = fromPDF(new File(args(0), targetfile))
-    rps.map { case (s, rs) => println("%s: %s" format (s, rs mkString ", ")) }
-  }
-
-  def fromPDF(f: File) = {
-    parse(PDFReader.getPages(f) flatMap { _.split("\n").drop(4) })
+  def fromPDF(f: File, p: Set[String]) = {
+    parse(PDFReader.getPages(f) flatMap { _.split("\n").drop(4) }, p)
   }
 
   /**
