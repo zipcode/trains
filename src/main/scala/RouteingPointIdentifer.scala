@@ -5,10 +5,10 @@ import java.io.File
 object RouteingPointIdentifier {
   val targetfile = "routeing_point_identifier.pdf"
 
-  def fromDirectory(s: String, p: Set[String]) = fromPDF(new File(s, targetfile), p)
+  def fromDirectory(s: String) = fromPDF(new File(s, targetfile))
 
-  def fromPDF(f: File, p: Set[String]) = {
-    parse(PDFReader.getPages(f) flatMap { _.split("\n").drop(4) }, p)
+  def fromPDF(f: File) = {
+    parse(PDFReader.getPages(f) flatMap { _.split("\n").drop(4) })
   }
 
   /**
