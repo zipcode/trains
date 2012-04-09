@@ -21,6 +21,7 @@ object PDFReader {
     }
     stripper.writeText(doc, output)
     output.flush
-    stream.toString("UTF-8").split(sep)
+    doc.close
+    stream.toString("UTF-8").split(sep).drop(1)
   }
 }
