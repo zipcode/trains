@@ -21,7 +21,11 @@ object PermittedRouteIdentifier {
         }
       }
       /* What remains will be maps */
-      (tokens, line drop (tokens.mkString(" ", "", " ").size))
+      if (tokens.size == 0) {
+        (tokens, line)
+      } else {
+        (tokens, line drop (tokens.mkString(" ", "", " ").size))
+      }
     }
 
     /* Some things are split onto new lines. Tack 'em on */
@@ -36,7 +40,7 @@ object PermittedRouteIdentifier {
     /* Fix it up to be the right datatype */
     entries map { case (stations, points) =>
       val List(p1, p2) = stations
-      (p1, p2, points.split(" ").toSeq)
+      (p1, p2, points.split(" +").toSeq)
     }       
   }
 }
