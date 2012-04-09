@@ -8,4 +8,4 @@ from the PDF in a parseable format.
 
 Usage:
 
-    sbt "run path/to/atoc_pdfs
+    sbt "run path/to/atoc_pdfs"
